@@ -1,0 +1,19 @@
+manifest.json
+{
+  "name": "Johnny",
+  "short_name": "Johnny",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0710",
+  "theme_color": "#0a0710",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0710'/%3E%3Cpath d='M12 34 L16 8 L26 24 L32 4 L40 24 L50 10 L52 36 Z' fill='%23ff2e4d'/%3E%3Crect x='14' y='32' width='36' height='10' fill='%23111'/%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
