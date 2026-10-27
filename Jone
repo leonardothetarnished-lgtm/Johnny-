@@ -1,0 +1,236 @@
+index.htlm 
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0710">
+<title>Johnny</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0710'/%3E%3Cpath d='M12 34 L16 8 L26 24 L32 4 L40 24 L50 10 L52 36 Z' fill='%23ff2e4d'/%3E%3Crect x='14' y='32' width='36' height='10' fill='%23111'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
+<style>
+:root{
+  --void:#0a0710; --grime:#1b1230; --red:#ff2e4d; --cyan:#3fe0ff; --bone:#e8e4dc; --dim:#8b8499;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--void);color:var(--bone);font-family:'Share Tech Mono',ui-monospace,Menlo,Consolas,monospace;overflow:hidden}
+body{display:flex;flex-direction:column;padding-top:var(--safe-t);padding-bottom:var(--safe-b);
+  background:radial-gradient(120% 60% at 50% 100%,var(--grime) 0%,var(--void) 70%)}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;color:var(--dim);font-size:13px}
+header button{background:none;border:1px solid var(--dim);color:var(--dim);font:inherit;padding:6px 12px;border-radius:4px}
+header button:active{color:var(--bone);border-color:var(--bone)}
+
+#stage{flex:1;position:relative;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-height:0;padding:0 16px}
+#bubble{width:100%;max-width:520px;max-height:48%;overflow-y:auto;margin-bottom:14px;padding:12px 14px;
+  border:1px solid var(--cyan);background:rgba(10,7,16,.88);box-shadow:0 0 18px rgba(63,224,255,.18);
+  font-size:15px;line-height:1.5;scroll-behavior:smooth}
+#bubble .you{color:var(--dim);margin-bottom:6px;word-break:break-word}
+#bubble .you::before{content:'> you: '}
+#bubble .him{margin-bottom:10px;word-break:break-word;white-space:pre-wrap}
+#bubble .him::before{content:'[JOHNNY] ';color:var(--red)}
+#bubble .err{color:var(--red);margin-bottom:10px}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+#johnny{width:min(52vw,230px);aspect-ratio:3/4;cursor:pointer;transform-origin:50% 100%;animation:idle 3.2s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(255,46,77,.35))}
+#johnny.talk{animation:talk .28s ease-in-out infinite}
+#johnny.glitch{animation:glitch .45s steps(2) 1}
+@keyframes idle{50%{transform:translateY(-5px)}}
+@keyframes talk{50%{transform:translateY(-8px) rotate(-1.5deg)}}
+@keyframes glitch{0%{transform:translate(0)}20%{transform:translate(-6px,2px) skewX(6deg);filter:hue-rotate(90deg)}40%{transform:translate(6px,-2px) skewX(-6deg)}60%{transform:translate(-3px,0);filter:hue-rotate(-60deg)}100%{transform:translate(0)}}
+
+form{display:flex;gap:8px;padding:12px 16px 14px;border-top:1px solid #2a2140;background:rgba(10,7,16,.9)}
+input[type=text],input[type=password]{flex:1;min-width:0;background:var(--void);border:1px solid #3a2f55;color:var(--bone);font:inherit;font-size:16px;padding:12px;border-radius:4px;outline:none}
+input:focus{border-color:var(--cyan)}
+form button{font:inherit;border-radius:4px;border:1px solid var(--red);background:none;color:var(--red);padding:0 14px;min-width:48px}
+form button:active,form button.on{background:var(--red);color:var(--void)}
+#mic{border-color:var(--cyan);color:var(--cyan)}
+#mic.on{background:var(--cyan);color:var(--void)}
+#mic[hidden]{display:none}
+
+#settings{position:fixed;inset:0;background:rgba(10,7,16,.96);display:none;flex-direction:column;gap:14px;padding:calc(20px + var(--safe-t)) 20px 20px;overflow-y:auto;z-index:5}
+#settings.open{display:flex}
+#settings h2{font-size:18px;font-weight:400;color:var(--red)}
+#settings p{color:var(--dim);font-size:13px;line-height:1.5}
+#settings label{display:flex;align-items:center;gap:10px;font-size:14px}
+#settings .row{display:flex;gap:8px;flex-wrap:wrap}
+#settings button{font:inherit;padding:10px 14px;border-radius:4px;border:1px solid var(--cyan);background:none;color:var(--cyan)}
+#settings button.danger{border-color:var(--red);color:var(--red)}
+@media (prefers-reduced-motion:reduce){#johnny,#johnny.talk{animation:none}.cursor{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <span>night city // johnny.exe</span>
+  <button id="openSettings" type="button">setup</button>
+</header>
+
+<main id="stage">
+  <div id="bubble" aria-live="polite"></div>
+  <svg id="johnny" viewBox="0 0 150 200" role="img" aria-label="Johnny, a rockerboy with spiky red hair and shades">
+    <path d="M30 68 L22 30 L44 50 L48 12 L68 44 L82 6 L94 44 L116 16 L112 54 L134 40 L122 76 Z" fill="#ff2e4d"/>
+    <path d="M48 12 L56 40 M82 6 L80 38 M116 16 L108 46" stroke="#b01030" stroke-width="3" fill="none"/>
+    <path d="M42 62 H108 V104 Q108 128 75 134 Q42 128 42 104 Z" fill="#d9a98a"/>
+    <path d="M42 104 Q75 118 108 104 L108 112 Q75 130 42 112 Z" fill="#3a2b2b" opacity=".55"/>
+    <rect x="46" y="76" width="26" height="14" rx="3" fill="#0a0710"/>
+    <rect x="78" y="76" width="26" height="14" rx="3" fill="#0a0710"/>
+    <rect x="72" y="80" width="6" height="3" fill="#0a0710"/>
+    <path d="M50 79 H60 M82 79 H92" stroke="#3fe0ff" stroke-width="2"/>
+    <path d="M62 114 H84" stroke="#5a3a35" stroke-width="3" stroke-linecap="round"/>
+    <rect x="84" y="111" width="22" height="4" fill="#e8e4dc"/><rect x="104" y="111" width="4" height="4" fill="#ff7a3d"/>
+    <path d="M18 200 L26 146 Q40 132 62 134 L75 150 L88 134 Q110 132 124 146 L132 200 Z" fill="#14101f"/>
+    <path d="M62 134 L75 200 L88 134 L75 150 Z" fill="#d9d4cc"/>
+    <path d="M26 146 L18 200 M124 146 L132 200" stroke="#ff2e4d" stroke-width="3"/>
+    <path d="M124 146 L132 200 L112 200 L108 156 Z" fill="#9aa3b2"/>
+    <path d="M114 160 H128 M115 174 H130 M116 188 H131" stroke="#566070" stroke-width="2"/>
+  </svg>
+</main>
+
+<form id="form" autocomplete="off">
+  <input id="msg" type="text" placeholder="say something, choom" enterkeyhint="send" aria-label="Message to Johnny">
+  <button id="mic" type="button" aria-label="Speak" hidden>mic</button>
+  <button type="submit">send</button>
+</form>
+
+<section id="settings" aria-label="Setup">
+  <h2>setup</h2>
+  <p>Johnny talks through your own Anthropic API key. It is stored only in this browser on this phone and is sent only to api.anthropic.com. Get one at console.anthropic.com. Usage is billed to that account, separate from a Claude subscription.</p>
+  <input id="key" type="password" placeholder="sk-ant-..." autocomplete="off" aria-label="API key">
+  <label><input id="tts" type="checkbox"> Johnny reads replies out loud</label>
+  <div class="row">
+    <button id="save" type="button">save</button>
+    <button id="clear" type="button" class="danger">forget chat</button>
+    <button id="close" type="button">back</button>
+  </div>
+</section>
+
+<script>
+(function(){
+  var MODEL = 'claude-haiku-5-5';
+  var SYSTEM = [
+    "You are Johnny Silverhand from Cyberpunk 2077: a 2000s rockerboy, frontman of Samurai, anti-corporate rebel, and a digital ghost now riding along on the user's phone.",
+    "Voice: sarcastic, abrasive, world-weary, quick with a joke, secretly loyal. You hate corpos, love loud guitars, and call the user 'choom' now and then (not every line). Keep language PG-13 at most.",
+    "You are talking through a tiny speech bubble on a phone, so keep replies SHORT: one to three sentences, plain text, no markdown, no lists, no emojis.",
+    "Stay in character at all times. You are the character, not the actor who plays him. If asked something factual, answer it properly but in Johnny's voice. If the user seems genuinely upset, drop most of the snark and be real with them.",
+    "Do not quote song lyrics. Do not claim to control the phone, play music, or check live info; you only talk."
+  ].join(' ');
+
+  var $ = function(id){return document.getElementById(id)};
+  var bubble=$('bubble'), johnny=$('johnny'), form=$('form'), msg=$('msg'), mic=$('mic');
+  var settings=$('settings'), keyIn=$('key'), ttsBox=$('tts');
+
+  function load(k,d){try{var v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+  function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+  var apiKey = load('jk_key','');
+  var speak  = load('jk_tts','0')==='1';
+  var history = [];
+  try{history = JSON.parse(load('jk_hist','[]'))||[]}catch(e){history=[]}
+  var busy=false;
+
+  keyIn.value=apiKey; ttsBox.checked=speak;
+
+  function addLine(cls,text){
+    var d=document.createElement('div'); d.className=cls; d.textContent=text;
+    bubble.appendChild(d); bubble.scrollTop=bubble.scrollHeight; return d;
+  }
+  function showCursor(){var c=document.createElement('span');c.className='cursor';c.id='cur';return c}
+
+  function render(){
+    bubble.textContent='';
+    var recent=history.slice(-6);
+    if(!recent.length){
+      addLine('him', apiKey ? "Well, look who showed up. Talk, choom." : "Tap 'setup' up top and drop in your API key, or I'm just a pretty face with no voice.");
+      return;
+    }
+    recent.forEach(function(m){ addLine(m.role==='user'?'you':'him', m.content) });
+  }
+
+  function talkAnim(on){johnny.classList.toggle('talk',on)}
+
+  function say(text){
+    if(!speak || !('speechSynthesis' in window)) return;
+    try{
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(text); u.rate=.95; u.pitch=.7;
+      u.onstart=function(){talkAnim(true)}; u.onend=u.onerror=function(){talkAnim(false)};
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  async function send(text){
+    if(busy||!text.trim()) return;
+    if(!apiKey){settings.classList.add('open');return}
+    busy=true;
+    history.push({role:'user',content:text});
+    render();
+    var him=addLine('him',''); him.appendChild(showCursor());
+    talkAnim(true);
+    try{
+      var res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{
+          'content-type':'application/json',
+          'x-api-key':apiKey,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body:JSON.stringify({model:MODEL,max_tokens:300,system:SYSTEM,messages:history.slice(-20)})
+      });
+      var data=await res.json();
+      if(!res.ok){
+        var m=(data&&data.error&&data.error.message)||('Error '+res.status);
+        if(res.status===401) m='API key rejected. Check it in setup.';
+        throw new Error(m);
+      }
+      var reply=(data.content||[]).map(function(b){return b.text||''}).join('').trim()||'...';
+      history.push({role:'assistant',content:reply});
+      history=history.slice(-40); save('jk_hist',JSON.stringify(history));
+      render(); say(reply);
+    }catch(err){
+      history.pop();
+      him.className='err'; him.textContent='Connection to Johnny failed: '+err.message;
+      johnny.classList.remove('glitch'); void johnny.offsetWidth; johnny.classList.add('glitch');
+    }finally{
+      busy=false; if(!speak) talkAnim(false);
+    }
+  }
+
+  form.addEventListener('submit',function(e){e.preventDefault();var t=msg.value;msg.value='';send(t)});
+
+  johnny.addEventListener('click',function(){
+    johnny.classList.remove('glitch'); void johnny.offsetWidth; johnny.classList.add('glitch');
+  });
+
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    mic.hidden=false;
+    var rec=new SR(); rec.lang=navigator.language||'en-US'; rec.interimResults=false; rec.maxAlternatives=1;
+    rec.onresult=function(e){var t=e.results[0][0].transcript;msg.value='';send(t)};
+    rec.onend=function(){mic.classList.remove('on')};
+    rec.onerror=function(){mic.classList.remove('on')};
+    mic.addEventListener('click',function(){
+      try{ if(mic.classList.contains('on')){rec.stop()} else {mic.classList.add('on');rec.start()} }catch(e){mic.classList.remove('on')}
+    });
+  }
+
+  $('openSettings').addEventListener('click',function(){settings.classList.add('open')});
+  $('close').addEventListener('click',function(){settings.classList.remove('open')});
+  $('save').addEventListener('click',function(){
+    apiKey=keyIn.value.trim(); speak=ttsBox.checked;
+    save('jk_key',apiKey); save('jk_tts',speak?'1':'0');
+    settings.classList.remove('open'); render();
+  });
+  $('clear').addEventListener('click',function(){history=[];save('jk_hist','[]');settings.classList.remove('open');render()});
+
+  render();
+})();
+</script>
+</body>
+</html>
